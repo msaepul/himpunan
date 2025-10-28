@@ -1,60 +1,427 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Game Himpunan Interaktif</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aplikasi Himpunan & Relasi — Single Page</title>
+  <style>
+    :root{
+      --brown:#7C4A2A;
+      --bg:#f9f5f1;
+      --card:#ffffff;
+      --muted:#6b5b52;
+      --accent:#d9cabf;
+    }
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    body{margin:0;background:var(--bg);color:var(--muted);padding:18px}
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    h1{color:var(--brown);font-size:22px;margin:0}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:980px){ .grid{grid-template-columns:320px 1fr 360px} }
+    .card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    label{display:block;font-size:13px;margin-top:8px}
+    input[type="text"]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6dfd9}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+    .btn-primary{background:var(--brown);color:white}
+    .btn-outline{background:white;border:1px solid #ddd;color:var(--muted)}
+    .small{font-size:13px;color:#8a7870}
+    .ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .box{padding:10px;border-radius:10px;border:1px solid #eee;background:#fff7f3}
+    .svg-wrap{background:#fff;border-radius:8px;padding:8px;border:1px solid #eee}
+    .quiz-option{display:flex;align-items:center;gap:8px;padding:6px 0}
+    .history-list{max-height:220px;overflow:auto}
+    footer{margin-top:12px;color:#8a7870;font-size:13px}
+    .tag{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--accent);font-size:12px;color:var(--brown)}
+  </style>
 </head>
 <body>
-<main class="container">
-<header>
-<h1>Game Himpunan Interaktif</h1>
-<p class="subtitle">Belajar himpunan lewat kuis cepat — tema coklat.</p>
-</header>
+  <div class="wrap">
+    <header>
+      <h1>Aplikasi Interaktif — Himpunan & Relasi (Single HTML)</h1>
+      <div class="small">Tema: Brown • Edukasi + Simulasi + Kuis</div>
+    </header>
 
+    <div class="grid">
+      <!-- Left: Input -->
+      <section class="card">
+        <h3 style="color:var(--brown);margin:0 0 6px 0">Input Himpunan & Relasi</h3>
+        <label>Himpunan A (pisah koma/spasi)</label>
+        <input id="inputA" type="text" value="1,2,3" />
+        <label>Himpunan B (pisah koma/spasi)</label>
+        <input id="inputB" type="text" value="3,4,5" />
+        <label>Relasi R (format: a-b,c-d atau a:b)</label>
+        <input id="inputR" type="text" value="1-3,2-4" />
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="btnUpdate" class="btn btn-primary">Update</button>
+          <button id="btnReset" class="btn btn-outline">Reset</button>
+          <button id="btnSnapshot" class="btn btn-outline">Simpan Snapshot</button>
+        </div>
+        <div class="small" style="margin-top:8px">Contoh relasi: <span class="tag">1-3</span> , <span class="tag">2-2</span></div>
+      </section>
 
-<section id="game">
-<div id="info">
-<div>Soal <span id="qIndex">1</span>/<span id="totalQ">5</span></div>
-<div>Skor: <span id="score">0</span></div>
-</div>
+      <!-- Center: Operations -->
+      <section class="card">
+        <h3 style="color:var(--brown);margin:0 0 6px 0">Operasi Himpunan & Relasi</h3>
+        <div class="small">A = <span id="dispA"></span> &nbsp; B = <span id="dispB"></span></div>
 
+        <div class="ops-grid" style="margin-top:12px">
+          <div class="box">
+            <div class="small">A ∪ B</div>
+            <div id="union" style="font-weight:600;margin-top:6px"></div>
+          </div>
+          <div class="box">
+            <div class="small">A ∩ B</div>
+            <div id="intersection" style="font-weight:600;margin-top:6px"></div>
+          </div>
+          <div class="box">
+            <div class="small">A \ B</div>
+            <div id="diffAB" style="font-weight:600;margin-top:6px"></div>
+          </div>
+          <div class="box">
+            <div class="small">B \ A</div>
+            <div id="diffBA" style="font-weight:600;margin-top:6px"></div>
+          </div>
+        </div>
 
-<div id="vennArea" aria-hidden="true">
-<!-- Venn diagram will be injected here as SVG -->
-</div>
+        <div style="margin-top:12px">
+          <div class="small">Cartesian Product A × B</div>
+          <div id="cartesian" style="margin-top:6px"></div>
+        </div>
 
+        <div style="margin-top:12px">
+          <div class="small">Relasi R</div>
+          <div id="dispR" style="margin-top:6px"></div>
+          <div style="margin-top:8px" class="small">
+            <div>Refleksif pada U (A∪B): <strong id="isRef">-</strong></div>
+            <div>Simetris: <strong id="isSym">-</strong></div>
+            <div>Antisimetri: <strong id="isAnti">-</strong></div>
+            <div>Transitif: <strong id="isTrans">-</strong></div>
+          </div>
+        </div>
+      </section>
 
-<div id="questionCard" class="card">
-<div id="questionText" class="question">Memuat soal...</div>
-<div id="choices" class="choices"></div>
-</div>
+      <!-- Right: Visual + Quiz + History -->
+      <section class="card">
+        <h3 style="color:var(--brown);margin:0 0 6px 0">Visualisasi & Kuis</h3>
 
+        <div style="margin-bottom:10px">
+          <div class="small">Diagram Relasi (graf berarah)</div>
+          <div class="svg-wrap" style="margin-top:8px">
+            <svg id="svgCanvas" viewBox="0 0 800 220" width="100%" height="220" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+        </div>
 
-<div class="controls">
-<button id="nextBtn" class="btn" disabled>Next</button>
-<button id="restartBtn" class="btn secondary">Mulai Ulang</button>
-</div>
+        <div style="margin-top:8px">
+          <div class="small" style="font-weight:600">Kuis Interaktif</div>
+          <div id="quizBox" style="margin-top:8px;padding:8px;border-radius:8px;border:1px solid #eee;background:#fff">
+            <div id="quizQ" style="font-weight:600"></div>
+            <div id="quizOpts" style="margin-top:8px"></div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <button id="btnSubmitQuiz" class="btn btn-primary">Submit</button>
+              <button id="btnNextQuiz" class="btn btn-outline">Next</button>
+            </div>
+            <div id="quizResult" style="margin-top:8px;font-size:13px"></div>
+          </div>
+        </div>
 
+        <div style="margin-top:12px">
+          <div class="small" style="font-weight:600">Riwayat & Snapshot</div>
+          <div class="history-list" id="historyList" style="margin-top:8px"></div>
+        </div>
+      </section>
+    </div>
 
-<footer class="help">
-<small>Tip: perhatikan diagram Venn di atas untuk beberapa soal.</small>
-</footer>
-</section>
+    <footer>
+      Tips: salin file ini -> unggah ke hosting (GitHub Pages, Netlify). Atau buka langsung di browser untuk testing.
+    </footer>
+  </div>
 
+  <script>
+    // --- Utility parsing functions ---
+    function parseSet(text) {
+      if (!text) return [];
+      return Array.from(new Set(
+        text.split(/[,;\\s]+/).map(s => s.trim()).filter(s => s !== "")
+      ));
+    }
+    function parsePairs(text) {
+      if (!text) return [];
+      const parts = text.split(/[,;\\s]+/).map(s => s.trim()).filter(Boolean);
+      const out = [];
+      const seen = new Set();
+      for (let p of parts) {
+        const m = p.split(/[-:>]/).map(x => x && x.trim());
+        if (m.length >= 2 && m[0] && m[1]) {
+          const k = m[0] + '|' + m[1];
+          if (!seen.has(k)) { seen.add(k); out.push([m[0], m[1]]); }
+        }
+      }
+      return out;
+    }
 
-<aside id="results" class="card hidden">
-<h2>Hasil</h2>
-<p>Total skor: <strong id="finalScore">0</strong></p>
-<button id="playAgain" class="btn">Main Lagi</button>
-</aside>
+    // --- Set operations ---
+    function union(A,B){ return Array.from(new Set([...A,...B])); }
+    function intersection(A,B){ return A.filter(x=>B.includes(x)); }
+    function difference(A,B){ return A.filter(x=>!B.includes(x)); }
+    function cartesian(A,B){ const res=[]; A.forEach(a=>B.forEach(b=>res.push([a,b]))); return res; }
+    function isSubset(A,B){ return A.every(x=>B.includes(x)); }
 
+    // --- Relation checks ---
+    function checkReflexive(domain, R){ return domain.every(x=>R.some(p=>p[0]===x && p[1]===x)); }
+    function checkSymmetric(R){ return R.every(p=>R.some(q=>q[0]===p[1] && q[1]===p[0])); }
+    function checkAntisymmetric(R){ return R.every(p=> !(R.some(q=>q[0]===p[1] && q[1]===p[0]) && p[0]!==p[1]) ); }
+    function checkTransitive(R){
+      return R.every(p => R.every(q => {
+        if (p[1] === q[0]) {
+          return R.some(r => r[0] === p[0] && r[1] === q[1]);
+        }
+        return true;
+      }));
+    }
 
-</main>
+    // --- DOM refs ---
+    const inputA = document.getElementById('inputA');
+    const inputB = document.getElementById('inputB');
+    const inputR = document.getElementById('inputR');
+    const btnUpdate = document.getElementById('btnUpdate');
+    const btnReset = document.getElementById('btnReset');
+    const btnSnapshot = document.getElementById('btnSnapshot');
 
+    const dispA = document.getElementById('dispA');
+    const dispB = document.getElementById('dispB');
+    const dispR = document.getElementById('dispR');
+    const unionEl = document.getElementById('union');
+    const interEl = document.getElementById('intersection');
+    const diffAB = document.getElementById('diffAB');
+    const diffBA = document.getElementById('diffBA');
+    const cartEl = document.getElementById('cartesian');
 
-<script src="script.js"></script>
+    const isRef = document.getElementById('isRef');
+    const isSym = document.getElementById('isSym');
+    const isAnti = document.getElementById('isAnti');
+    const isTrans = document.getElementById('isTrans');
+
+    const svgCanvas = document.getElementById('svgCanvas');
+    const historyList = document.getElementById('historyList');
+
+    // Quiz
+    const quizzes = [
+      {q:"Jika A = {1,2} dan B = {2,3}, berapakah A ∪ B?", opts:["{1,2}","{1,2,3}","{2,3}","{1,3}"], ans:"{1,2,3}", explain:"Gabungan mengandung semua elemen unik."},
+      {q:"Relasi R = {(1,1),(2,2),(1,2)}. Apakah R refleksif pada domain {1,2}?", opts:["Ya","Tidak"], ans:"Ya", explain:"(1,1) dan (2,2) ada."},
+      {q:"Jika R mengandung (1,2) dan (2,1), apakah R simetris?", opts:["Ya","Tidak"], ans:"Ya", explain:"Setiap pasangan punya pasangan balik."}
+    ];
+    let quizIndex = 0;
+    let chosen = null;
+    const quizQ = document.getElementById('quizQ');
+    const quizOpts = document.getElementById('quizOpts');
+    const btnSubmitQuiz = document.getElementById('btnSubmitQuiz');
+    const btnNextQuiz = document.getElementById('btnNextQuiz');
+    const quizResult = document.getElementById('quizResult');
+
+    // state
+    let A = [], B = [], R = [];
+
+    function renderAll(saveHistory=false) {
+      A = parseSet(inputA.value);
+      B = parseSet(inputB.value);
+      R = parsePairs(inputR.value);
+
+      const U = union(A,B);
+
+      // display sets
+      dispA.textContent = `{${A.join(', ')}}`;
+      dispB.textContent = `{${B.join(', ')}}`;
+      dispR.textContent = R.length ? R.map(p=>`(${p[0]},${p[1]})`).join(', ') : 'Ø';
+
+      // ops
+      unionEl.textContent = `{${union(A,B).join(', ')}}`;
+      interEl.textContent = `{${intersection(A,B).join(', ')}}`;
+      diffAB.textContent = `{${difference(A,B).join(', ')}}`;
+      diffBA.textContent = `{${difference(B,A).join(', ')}}`;
+      cartEl.textContent = cartesian(A,B).map(p=>`(${p[0]},${p[1]})`).join(', ') || 'Ø';
+
+      // relation props
+      isRef.textContent = checkReflexive(U,R) ? 'Ya' : 'Tidak';
+      isSym.textContent = checkSymmetric(R) ? 'Ya' : 'Tidak';
+      isAnti.textContent = checkAntisymmetric(R) ? 'Ya' : 'Tidak';
+      isTrans.textContent = checkTransitive(R) ? 'Ya' : 'Tidak';
+
+      // draw svg
+      drawGraph(U, R);
+
+      // optionally save snapshot to local history
+      if (saveHistory) {
+        const hist = getHistory();
+        hist.unshift({time: new Date().toLocaleString(), A, B, R});
+        localStorage.setItem('hR_history', JSON.stringify(hist.slice(0,40)));
+        renderHistory();
+      }
+    }
+
+    // draw nodes evenly spaced
+    function drawGraph(U, R) {
+      while (svgCanvas.firstChild) svgCanvas.removeChild(svgCanvas.firstChild);
+      const width = svgCanvas.viewBox.baseVal.width || 800;
+      const height = svgCanvas.viewBox.baseVal.height || 220;
+      // simple layout: horizontal nodes
+      const gap = Math.min(110, Math.max(70, (width-120) / Math.max(1, U.length-1)));
+      const startX = 60;
+      const y = height/2;
+      const nodes = U.map((id,i)=>({id, x: startX + i*gap, y}));
+
+      // defs arrow
+      const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+      defs.innerHTML = `<marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L6,3 z" fill="${getComputedStyle(document.documentElement).getPropertyValue('--brown')||'#7C4A2A'}" />
+      </marker>`;
+      svgCanvas.appendChild(defs);
+
+      // edges paths
+      R.forEach((p, idx) => {
+        const fromIndex = U.indexOf(p[0]);
+        const toIndex = U.indexOf(p[1]);
+        if (fromIndex === -1 || toIndex === -1) return;
+        const fx = nodes[fromIndex].x;
+        const tx = nodes[toIndex].x;
+        const dy = (fromIndex === toIndex) ? -48 : 0;
+        const midX = (fx+tx)/2;
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', `M ${fx} ${y-22} C ${midX} ${y-60+dy}, ${midX} ${y-60+dy}, ${tx} ${y-22}`);
+        path.setAttribute('fill','none');
+        path.setAttribute('stroke', getComputedStyle(document.documentElement).getPropertyValue('--brown') || '#7C4A2A');
+        path.setAttribute('stroke-width','1.6');
+        path.setAttribute('marker-end','url(#arrow)');
+        svgCanvas.appendChild(path);
+
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x', midX);
+        t.setAttribute('y', y-58 + dy);
+        t.setAttribute('text-anchor','middle');
+        t.setAttribute('font-size','12');
+        t.setAttribute('fill','#5b3b2a');
+        t.textContent = `${p[0]}→${p[1]}`;
+        svgCanvas.appendChild(t);
+      });
+
+      // nodes circles
+      nodes.forEach(n=>{
+        const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx', n.x);
+        c.setAttribute('cy', n.y);
+        c.setAttribute('r', 26);
+        c.setAttribute('fill','#fff7f3');
+        c.setAttribute('stroke', getComputedStyle(document.documentElement).getPropertyValue('--brown') || '#7C4A2A');
+        c.setAttribute('stroke-width','1.6');
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+        text.setAttribute('x', n.x);
+        text.setAttribute('y', n.y+6);
+        text.setAttribute('text-anchor','middle');
+        text.setAttribute('font-size','14');
+        text.setAttribute('fill', getComputedStyle(document.documentElement).getPropertyValue('--brown') || '#7C4A2A');
+        text.textContent = n.id;
+
+        g.appendChild(c);
+        g.appendChild(text);
+        svgCanvas.appendChild(g);
+      });
+    }
+
+    // history localStorage
+    function getHistory(){
+      try { return JSON.parse(localStorage.getItem('hR_history')||'[]'); }
+      catch(e){ return []; }
+    }
+    function renderHistory(){
+      const hist = getHistory();
+      historyList.innerHTML = hist.length ? hist.map(h=>{
+        const rstr = h.R.map(p=>`(${p[0]},${p[1]})`).join(', ');
+        return `<div style="padding:8px;border-bottom:1px solid #f1e9e4"><div style="font-size:12px;color:#9a8b82">${h.time}</div>
+        <div style="font-size:13px">A: {${h.A.join(', ')}} &nbsp; B: {${h.B.join(', ')}}</div>
+        <div style="font-size:12px;color:#7b6a61">R: ${rstr || 'Ø'}</div></div>`;
+      }).join('') : '<div style="color:#9a8b82">Belum ada snapshot/riwayat.</div>';
+    }
+
+    // --- Quiz render & logic ---
+    function renderQuiz() {
+      const q = quizzes[quizIndex];
+      quizQ.textContent = q.q;
+      quizOpts.innerHTML = q.opts.map((o, i) => {
+        return `<label class="quiz-option"><input type="radio" name="opt" value="${o}" ${i===0? '':' '} /> <span>${o}</span></label>`;
+      }).join('');
+      quizResult.textContent = '';
+      chosen = null;
+      Array.from(quizOpts.querySelectorAll('input[name="opt"]')).forEach(inp=>{
+        inp.addEventListener('change', ()=> chosen = inp.value);
+      });
+    }
+
+    btnSubmitQuiz.addEventListener('click', ()=>{
+      const q = quizzes[quizIndex];
+      if (!chosen) { quizResult.textContent = 'Pilih jawaban dulu.'; return; }
+      const ok = chosen === q.ans;
+      quizResult.innerHTML = ok ? `<span style="color:green;font-weight:600">Benar</span> — ${q.explain}` : `<span style="color:#a4422a;font-weight:600">Salah</span> — Jawaban: ${q.ans}<div style="color:#7b6a61">${q.explain}</div>`;
+      // save quiz result in history
+      const hist = getHistory();
+      hist.unshift({time: new Date().toLocaleString(), quiz: true, q: q.q, chosen, ok});
+      localStorage.setItem('hR_history', JSON.stringify(hist.slice(0,40)));
+      renderHistory();
+    });
+    btnNextQuiz.addEventListener('click', ()=>{
+      quizIndex = (quizIndex + 1) % quizzes.length;
+      renderQuiz();
+    });
+
+    // --- event handlers ---
+    btnUpdate.addEventListener('click', ()=> renderAll(false));
+    btnReset.addEventListener('click', ()=>{
+      inputA.value = ''; inputB.value = ''; inputR.value = '';
+      renderAll(false);
+    });
+    btnSnapshot.addEventListener('click', ()=> renderAll(true));
+
+    // init
+    (function init(){
+      // restore last saved sets if exist
+      try {
+        const saved = JSON.parse(localStorage.getItem('hR_last'));
+        if (saved) {
+          if (saved.A) inputA.value = saved.A.join(', ');
+          if (saved.B) inputB.value = saved.B.join(', ');
+          if (saved.R) inputR.value = saved.R.map(p=>`${p[0]}-${p[1]}`).join(', ');
+        }
+      } catch(e){}
+      renderAll(false);
+      renderQuiz();
+      renderHistory();
+
+      // autosave last state on change (debounced)
+      let t;
+      [inputA,inputB,inputR].forEach(inp=>{
+        inp.addEventListener('input', ()=>{
+          clearTimeout(t);
+          t = setTimeout(()=>{
+            const A_ = parseSet(inputA.value), B_ = parseSet(inputB.value), R_ = parsePairs(inputR.value);
+            localStorage.setItem('hR_last', JSON.stringify({A:A_,B:B_,R:R_}));
+          }, 800);
+        });
+      });
+    })();
+
+    // small helpers used in checks (adaptation for checkReflexive used earlier)
+    function checkReflexive(domain, relation) {
+      return domain.every(x => relation.some(p => p[0] === x && p[1] === x));
+    }
+    function checkSymmetric(relation) { return relation.every(p => relation.some(q => q[0]===p[1] && q[1]===p[0])); }
+    function checkAntisymmetric(relation) { return relation.every(p => !(relation.some(q => q[0]===p[1] && q[1]===p[0]) && p[0]!==p[1])); }
+    function checkTransitive(relation) {
+      return relation.every(p => relation.every(q => {
+        if (p[1] === q[0]) return relation.some(r => r[0] === p[0] && r[1] === q[1]);
+        return true;
+      }));
+    }
+  </script>
 </body>
 </html>
-
