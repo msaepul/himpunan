@@ -1,88 +1,59 @@
+<!doctype html>
 <html lang="id">
-
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Aplikasi Himpunan Interaktif</title>
-    <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Game Himpunan Interaktif</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <main class="container">
-        <h1>Aplikasi Himpunan Interaktif</h1>
-        <p class="lead">Buat dua himpunan (A dan B), masukkan elemen, lalu pilih operasi: <strong>Union</strong>,
-            <strong>Intersection</strong>, <strong>Difference</strong>, <strong>Symmetric Difference</strong>.</p>
+<main class="container">
+<header>
+<h1>Game Himpunan Interaktif</h1>
+<p class="subtitle">Belajar himpunan lewat kuis cepat — tema coklat.</p>
+</header>
 
 
-        <section class="controls">
-            <div class="set-box">
-                <h2>Himpunan A</h2>
-                <input id="inputA" placeholder="Tambah elemen (pisah koma)" />
-                <button id="addA">Tambah ke A</button>
-                <div class="elements" id="eleA"></div>
-            </div>
+<section id="game">
+<div id="info">
+<div>Soal <span id="qIndex">1</span>/<span id="totalQ">5</span></div>
+<div>Skor: <span id="score">0</span></div>
+</div>
 
 
-            <div class="set-box">
-                <h2>Himpunan B</h2>
-                <input id="inputB" placeholder="Tambah elemen (pisah koma)" />
-                <button id="addB">Tambah ke B</button>
-                <div class="elements" id="eleB"></div>
-            </div>
-        </section>
+<div id="vennArea" aria-hidden="true">
+<!-- Venn diagram will be injected here as SVG -->
+</div>
 
 
-        <section class="ops">
-            <label>Pilih operasi:</label>
-            <select id="operation">
-                <option value="union">Union (A ∪ B)</option>
-                <option value="intersection">Intersection (A ∩ B)</option>
-                <option value="difference">Difference (A \ B)</option>
-                <option value="symdiff">Symmetric Difference</option>
-            </select>
-            <button id="compute">Hitung</button>
-            <button id="clear">Bersihkan Semua</button>
-        </section>
+<div id="questionCard" class="card">
+<div id="questionText" class="question">Memuat soal...</div>
+<div id="choices" class="choices"></div>
+</div>
 
 
-        <section class="result">
-            <h3>Hasil</h3>
-            <div id="resultList" class="result-list">-</div>
-        </section>
+<div class="controls">
+<button id="nextBtn" class="btn" disabled>Next</button>
+<button id="restartBtn" class="btn secondary">Mulai Ulang</button>
+</div>
 
 
-        <section class="venn">
-            <h3>Visualisasi</h3>
-            <!-- Inline SVG Venn diagram -->
-            <svg id="vennSvg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet">
-                <defs>
-                    <filter id="blur">
-                        <feGaussianBlur stdDeviation="0.5" />
-                    </filter>
-                </defs>
-                <g transform="translate(0,0)">
-                    <circle id="circleA" cx="220" cy="150" r="110" class="a" />
-                    <circle id="circleB" cx="380" cy="150" r="110" class="b" />
+<footer class="help">
+<small>Tip: perhatikan diagram Venn di atas untuk beberapa soal.</small>
+</footer>
+</section>
 
 
-                    <!-- labels -->
-                    <text x="140" y="70" class="label">A</text>
-                    <text x="440" y="70" class="label">B</text>
+<aside id="results" class="card hidden">
+<h2>Hasil</h2>
+<p>Total skor: <strong id="finalScore">0</strong></p>
+<button id="playAgain" class="btn">Main Lagi</button>
+</aside>
 
 
-                    <!-- Elements will be injected here -->
-                    <g id="elementsSvg"></g>
-                </g>
-            </svg>
+</main>
 
 
-            <p class="caption">Klik elemen pada diagram untuk menghapusnya dari himpunan.</p>
-        </section>
-
-
-        <footer>
-            <p>Siap diupload ke GitHub Pages — lihat <a href="#readme">README</a> untuk instruksi.</p>
-        </footer>
-
-
+<script src="script.js"></script>
+</body>
 </html>
